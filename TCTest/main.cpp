@@ -76,6 +76,12 @@ static void test_mnemonic_to_seed()
 		string seed = mnemonic_to_seed(mnemonic, "TREZOR");
 		VF("mnemonic_to_seed", seed == "c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04");
 	}
+
+	{
+		// ÕÅÑïµÄ±Ò¶Ü
+		string seed = mnemonic_to_seed("blue submit hurt base spray learn permit two absurd brown large extend awkward cool hair resist quarter fever brave sight palm argue adapt slush", "");
+		VF("mnemonic_to_seed", seed == "a23af240b23010918472b3a7918899950f22e313168665839e2381618972cf572e36fbda9f4fbc7260193d522abb06a6612d879f756567c44d02c7687d2259e1");
+	}
 }
 
 static void check_mnemonic()
@@ -98,7 +104,7 @@ int main(int argc, char *argv[])
 	//CosTest();
 	//BtxonAPITest();
 	//BTCTest();
-	//BHPTest();
+	BHPTest();
 	//EthTest();
 	//EosTest();
 	TronTest();
