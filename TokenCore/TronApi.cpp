@@ -387,12 +387,39 @@ string make_unsigned_tx_trc20(
     return str_raw_data;
 }
 
-string make_unsigned_tx_from_json(const string &str_unsign_tx_json)
+string make_unsigned_tx_from_json(const string &str_unsined_tx_json) {
+	if ("" == str_unsined_tx_json) {
+		return string("");
+	}
+
+	neb::CJsonObject oJson(str_unsined_tx_json);
+	string str_raw_data_tag = "raw_data", str_contract_tag = "contract";
+	string str_type = oJson[str_raw_data_tag][str_contract_tag][0]["type"].ToString();
+	str_type = str_type.substr(1, str_type.size() - 2);
+
+	if ("TransferContract" == str_type) {
+		return make_unsigned_tx_trx_from_json(str_unsined_tx_json);
+	}
+	else if ("TriggerSmartContract" == str_type) {
+		return make_unsigned_tx_trc20_from_json(str_unsined_tx_json);
+	}
+	else if ("FreezeBalanceContract" == str_type) {
+		return make_unsigned_tx_freeze_from_json(str_unsined_tx_json);
+	}
+	else if ("UnfreezeBalanceContract" == str_type) {
+		return make_unsigned_tx_unfreeze_from_json(str_unsined_tx_json);
+	}
+	else {
+		return string("");
+	}
+}
+
+string make_unsigned_tx_trc20_from_json(const string &str_unsign_tx_trc20_json)
 {
-    if ("" == str_unsign_tx_json)
+    if ("" == str_unsign_tx_trc20_json)
         return string("");
 
-    neb::CJsonObject oJson(str_unsign_tx_json);
+    neb::CJsonObject oJson(str_unsign_tx_trc20_json);
     tronProtocol::raw raw_data;
 
     // ref_block_bytes ref_block_hash
@@ -578,9 +605,23 @@ string make_unsigned_tx_freeze_from_json(const string &str_unsigned_tx_freeze_js
 	str_type_url = str_type_url.substr(1, str_type_url.size() - 2);
 	lp_any->set_type_url(str_type_url.c_str());
 
+	// owner address
 	string str_owner_address = oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag]["owner_address"].ToString();
 	str_owner_address = str_owner_address.substr(1, str_owner_address.size() - 2);
 	Binary sz_owner_address = Binary::decode(str_owner_address);
+	// freeze resource
+	string str_freeze_resource = oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag]["resource"].ToString();	
+	tronProtocol::ResourceCode resource_type = tronProtocol::BANDWIDTH;
+	if ("" != str_freeze_resource) {
+		str_freeze_resource = _to_upper(str_freeze_resource);
+		if (str_freeze_resource.size() > 2) {
+			str_freeze_resource = str_freeze_resource.substr(1, str_freeze_resource.size() - 2);
+			if ("ENERGY" == str_freeze_resource) {
+				resource_type = tronProtocol::ENERGY;
+			}
+		}
+	}
+	// freeze balance and freeze duration
 	uint64 frozen_duration = 0, frozen_balance = 0;
 	oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag].Get("frozen_duration", frozen_duration);
 	oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag].Get("frozen_balance", frozen_balance);
@@ -589,6 +630,7 @@ string make_unsigned_tx_freeze_from_json(const string &str_unsigned_tx_freeze_js
 	freeze_contract.set_owner_address(sz_owner_address.data(), sz_owner_address.size());
 	freeze_contract.set_frozen_duration(frozen_duration);
 	freeze_contract.set_frozen_balance(frozen_balance);
+	freeze_contract.set_resource(resource_type);
 
 	int freeze_contract_size = freeze_contract.ByteSize();
 	Binary sz_freeze_contract(freeze_contract_size);
@@ -602,6 +644,80 @@ string make_unsigned_tx_freeze_from_json(const string &str_unsigned_tx_freeze_js
 	// cout << str_raw_data << endl;
 	// string str_tx_hash = sha256_hash(str_raw_data);
 	// cout << str_tx_hash << endl;
+	return str_raw_data;
+}
+
+string make_unsigned_tx_unfreeze_from_json(const string &str_unsigned_tx_unfreeze_json) {
+	if ("" == str_unsigned_tx_unfreeze_json)
+		return std::string("");
+
+	neb::CJsonObject oJson(str_unsigned_tx_unfreeze_json);
+	tronProtocol::raw raw_data;
+
+	// ref_block_bytes ref_block_hash
+	string str_raw_data_tag = "raw_data";
+	string str_ref_block_bytes = oJson[str_raw_data_tag]["ref_block_bytes"].ToString();
+	// remove double quotation mark
+	str_ref_block_bytes = str_ref_block_bytes.substr(1, str_ref_block_bytes.size() - 2);
+	Binary sz_ref_block_bytes = Binary::decode(str_ref_block_bytes);
+	raw_data.set_ref_block_bytes(sz_ref_block_bytes.data(), sz_ref_block_bytes.size());
+	string str_ref_block_hash = oJson[str_raw_data_tag]["ref_block_hash"].ToString();
+	str_ref_block_hash = str_ref_block_hash.substr(1, str_ref_block_hash.size() - 2);
+	Binary sz_ref_block_hash = Binary::decode(str_ref_block_hash);
+	raw_data.set_ref_block_hash(sz_ref_block_hash.data(), sz_ref_block_hash.size());
+
+	// expiration fee_limit timestamp
+	uint64 expiration = 0, fee_limit = 0, timestamp = 0;
+	oJson[str_raw_data_tag].Get("expiration", expiration);
+	raw_data.set_expiration(expiration);
+	oJson[str_raw_data_tag].Get("fee_limit", fee_limit);
+	raw_data.set_fee_limit(fee_limit);
+	oJson[str_raw_data_tag].Get("timestamp", timestamp);
+	raw_data.set_timestamp(timestamp);
+
+	// contract
+	string str_contract_tag = "contract", str_parameter_tag = "parameter";
+	string str_value_tag = "value";
+	string str_type = oJson[str_raw_data_tag][str_contract_tag][0]["type"].ToString();
+	str_type = str_type.substr(1, str_type.size() - 2);
+	tronProtocol::Contract_ContractType type = g_map_string_2_contract_type[str_type];
+	tronProtocol::Contract *lp_contract = raw_data.mutable_contract();
+	lp_contract->set_type(type);
+
+	google::protobuf::Any *lp_any = lp_contract->mutable_parameter();
+	string str_type_url = oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag]["type_url"].ToString();
+	str_type_url = str_type_url.substr(1, str_type_url.size() - 2);
+	lp_any->set_type_url(str_type_url.c_str());
+
+	string str_owner_address = oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag]["owner_address"].ToString();
+	str_owner_address = str_owner_address.substr(1, str_owner_address.size() - 2);
+	Binary sz_owner_address = Binary::decode(str_owner_address);
+	string str_unfreeze_type = oJson[str_raw_data_tag][str_contract_tag][0][str_parameter_tag][str_value_tag]["resource"].ToString();
+	tronProtocol::ResourceCode resource_type = tronProtocol::BANDWIDTH;
+	if ("" != str_unfreeze_type) {
+		str_unfreeze_type = _to_upper(str_unfreeze_type);
+		if (str_unfreeze_type.size() > 2) {
+			str_unfreeze_type = str_unfreeze_type.substr(1, str_unfreeze_type.size() - 2);
+			if ("ENERGY" == str_unfreeze_type) {
+				resource_type = tronProtocol::ENERGY;
+			}
+		}
+	}
+
+	tronProtocol::UnfreezeBalanceContract unfreeze_contract = tronProtocol::UnfreezeBalanceContract();
+	unfreeze_contract.set_owner_address(sz_owner_address.data(), sz_owner_address.size());
+	unfreeze_contract.set_resource(resource_type);
+
+	int unfreeze_contract_size = unfreeze_contract.ByteSize();
+	Binary sz_unfreeze_contract(unfreeze_contract_size);
+	unfreeze_contract.SerializeToArray(sz_unfreeze_contract.data(), unfreeze_contract_size);
+	lp_any->set_value(sz_unfreeze_contract.data(), unfreeze_contract_size);
+
+	// serialize
+	int raw_data_size = raw_data.ByteSize();
+	Binary sz_raw_data(raw_data_size);
+	raw_data.SerializeToArray(sz_raw_data.data(), raw_data_size);
+	string str_raw_data = Binary::encode(sz_raw_data);
 	return str_raw_data;
 }
 
@@ -645,7 +761,7 @@ string sign_message(const bool use_trx_header, const string &str_transaction , c
         fmt += "32";
     } else {
         char str_len[5] = {0};
-        sprintf(str_len, "%d", str_transaction.length() / 2);
+        sprintf(str_len, "%d", (int)str_transaction.length() / 2);
         fmt += str_len;
     }
     Binary sz_unsign_tx = Binary(fmt) + Binary::decode(str_transaction);

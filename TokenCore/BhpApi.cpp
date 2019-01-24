@@ -124,10 +124,11 @@ int make_unsign_tx(UserTransaction* ut)
 	string to_pubkey_hash = get_pubkey_hash_from_address(ut->to_address);
 	tx.add_tx_out(asset_id, (uint64_t)ut->pay, to_pubkey_hash);
 
-	if (!ut->change_address.empty())
+	u256 change = value_sum - ut->pay - fee;
+	if (!ut->change_address.empty() && (change > 50))
 	{
 		string change_pubkey_hash = get_pubkey_hash_from_address(ut->change_address);
-		tx.add_tx_out(asset_id, (uint64_t)(value_sum - ut->pay - fee), change_pubkey_hash);
+		tx.add_tx_out(asset_id, (uint64_t)change, change_pubkey_hash);
 	}
 
 	ut->tx_str = tx.encode();

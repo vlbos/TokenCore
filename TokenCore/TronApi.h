@@ -27,9 +27,11 @@ namespace TRONAPI
 		uint64_t u64_amount
 	);
 
-	string make_unsigned_tx_from_json(const string &str_unsign_tx_json);
+	string make_unsigned_tx_from_json(const string &str_unsined_tx_json);
+	string make_unsigned_tx_trc20_from_json(const string &str_unsign_tx_trc20_json);
 	string make_unsigned_tx_trx_from_json(const string &str_unsigned_tx_trx_json);
 	string make_unsigned_tx_freeze_from_json(const string &str_unsigned_tx_freeze_json);
+	string make_unsigned_tx_unfreeze_from_json(const string &str_unsigned_tx_unfreeze_json);
 
 	string tx_hash(const string& str_unsign_tx);
 
