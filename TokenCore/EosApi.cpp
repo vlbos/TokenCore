@@ -1,4 +1,4 @@
-﻿//#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <json/json.h>
@@ -291,7 +291,7 @@ int TxCreate(
         if (!j_raw_json.isObject())
             return -1;
         Json::FastWriter jWriter;
-        std::string chain_id = j_raw_json.asString();
+        std::string chain_id = j_chain_id.asString();
         std::string param = jWriter.write(j_raw_json);
         return make_unsign_tx_from_json(tx, chain_id.c_str(), param.c_str());
     }
