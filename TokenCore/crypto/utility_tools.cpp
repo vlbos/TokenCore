@@ -126,5 +126,5 @@ uint64_t little_endian_to_uint64_t(const string& str_data)
 uint64_t big_endian_to_uint64_t(const string& str_data)
 {
 	Binary vec_data = Binary::decode(str_data);
-	return bswap_64(*((uint32_t*)vec_data.data()));
+	return bswap_64(*((uint64_t*)vec_data.data()));
 }
