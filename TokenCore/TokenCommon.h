@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 #include <stdint.h>
-#include <string.h>
 
 using namespace std;
 
