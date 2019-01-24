@@ -484,9 +484,9 @@ int BtxonAPI::fetchFee(const CoinType& coinType, FeeInfo& feeinfo)
         }
 		else if (coinType.major == CoinTypeMajor::BHP)
 		{
-			feeinfo.midFee = jsonData["fee"].toString().toULongLong();
-			feeinfo.midFee = feeinfo.midFee;
-			feeinfo.maxFee = feeinfo.midFee;
+			feeinfo.minFee = jsonData["fee"].toString().toULongLong();
+			feeinfo.midFee = feeinfo.minFee;
+			feeinfo.maxFee = feeinfo.minFee;
 			feeinfo.param = 0;
 		}
 		else
