@@ -500,7 +500,8 @@ int make_unsign_tx(UserTransaction* ut)
 	output0.value = (uint64_t)(ut->pay);
 	tx.outputs.push_back(output0);
 
-	if (!ut->change_address.empty())
+	u256 change = value_sum - ut->pay - fee;
+	if (!ut->change_address.empty() && (change > 500))
 	{
 		TransactionOutput output1;
 		output1.address = ut->change_address;
@@ -508,7 +509,7 @@ int make_unsign_tx(UserTransaction* ut)
 		if (output1.script.empty())
 			return -2;		// 不支持这种交易
 
-		output1.value = (uint64_t)(value_sum - ut->pay - fee);
+		output1.value = (uint64_t)change;
 		tx.outputs.push_back(output1);
 	}
 
@@ -640,12 +641,13 @@ int make_unsign_tx(UserTransaction* ut)
 	output0.value = 546;
 	tx.outputs.push_back(output0);
 
-	if (!ut->change_address.empty())
+	u256 change = value_sum - 546 - fee;
+	if (!ut->change_address.empty() && (change > 500))
 	{
 		TransactionOutput output1;
 		output1.address = ut->change_address;
 		output1.script = "76a914" + get_pubkey_hash_from_base58check(output1.address) + "88ac";
-		output1.value = (uint64_t)(value_sum - 546 - fee);
+		output1.value = (uint64_t)change;
 		tx.outputs.push_back(output1);
 	}
 
