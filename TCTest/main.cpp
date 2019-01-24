@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	//CosTest();
 	//BtxonAPITest();
 	//BTCTest();
-	BHPTest();
+	//BHPTest();
 	//EthTest();
 	//EosTest();
 	TronTest();
