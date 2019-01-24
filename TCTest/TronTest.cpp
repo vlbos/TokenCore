@@ -53,9 +53,26 @@ static void test_make_unsigned_tx_from_json() {
 	//str_unsign_tx = TRONAPI::make_unsigned_tx_trx_from_json(str_unsigned_tx_trx_json);
 	//std::cout << "str_unsign_tx:\n" << str_unsign_tx << std::endl;
 
-	str_unsigned_tx_trx_json = "{\"txID\":\"e8235c4751ff9102e59d2cb315bea13c5c500590ff4ba703c92e4969f88ef5ab\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"frozen_duration\":3,\"frozen_balance\":100000000, \"owner_address\":\"418be260aa4fd9cc74d08029faf4f42b7c8d0983e9\"},\"type_url\":\"type.googleapis.com/protocol.FreezeBalanceContract\"},\"type\":\"FreezeBalanceContract\"}],\"ref_block_bytes\":\"5fd8\",\"ref_block_hash\":\"228e1f651d9ea3bf\",\"expiration\":1548058839000,\"timestamp\":1548058782434}}";
+	//str_unsigned_tx_trx_json = "{\"txID\":\"e8235c4751ff9102e59d2cb315bea13c5c500590ff4ba703c92e4969f88ef5ab\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"owner_address\":\"415bdb6c08021a83a86dabc6d50ed2b97e5ab1aa3b\"},\"type_url\":\"type.googleapis.com/protocol.UnfreezeBalanceContract\"},\"type\":\"UnfreezeBalanceContract\"}],\"ref_block_bytes\":\"5fd8\",\"ref_block_hash\":\"228e1f651d9ea3bf\",\"expiration\":1548058839000,\"timestamp\":1548058782434}}";
+	//str_unsign_tx = TRONAPI::make_unsigned_tx_unfreeze_from_json(str_unsigned_tx_trx_json);
+	//std::cout << "str_unsign_tx:\n" << str_unsign_tx << std::endl;
+
+	// freeze bandwidth
+	//str_unsigned_tx_trx_json = "{\"txID\":\"e20a34b9c2e30b89182d092e250a3ce0313fc9919ca9878ae0db74721fa8621f\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"frozen_duration\":3,\"frozen_balance\":100000000, \"owner_address\":\"4196c53e5572a128541a8d573b717d9d6b161b2a7e\"},\"type_url\":\"type.googleapis.com/protocol.FreezeBalanceContract\"},\"type\":\"FreezeBalanceContract\"}],\"ref_block_bytes\":\"b537\",\"ref_block_hash\":\"851838cbe3077f98\",\"expiration\":1548324529000,\"timestamp\":1548323472657}}";
+	//str_unsign_tx = TRONAPI::make_unsigned_tx_freeze_from_json(str_unsigned_tx_trx_json);
+	//std::cout << "str_unsign_tx:\n" << str_unsign_tx << std::endl;
+
+	// freeze energy
+	str_unsigned_tx_trx_json = "{\"txID\":\"72eba522a22d3608137da36e76d59258177b10a5837d503adfe39177b938909d\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"frozen_duration\":3,\"frozen_balance\":100000000, \"owner_address\":\"4196c53e5572a128541a8d573b717d9d6b161b2a7e\", \"resource\":\"ENERGY\"},\"type_url\":\"type.googleapis.com/protocol.FreezeBalanceContract\"},\"type\":\"FreezeBalanceContract\"}],\"ref_block_bytes\":\"b648\",\"ref_block_hash\":\"96ad32015be6f3c3\",\"expiration\":1548324348000,\"timestamp\":1548324291419}}";
 	str_unsign_tx = TRONAPI::make_unsigned_tx_freeze_from_json(str_unsigned_tx_trx_json);
 	std::cout << "str_unsign_tx:\n" << str_unsign_tx << std::endl;
+
+	string str_prikey = "d30aecd5c437684be9d942c12ac0d003cf5abf752f0e3f94ebbfbe698823cb39";
+	string str_sign = TRONAPI::sign_tx(str_unsign_tx, str_prikey);
+	std::cout << "str_sign:\n" << str_sign << std::endl;
+
+	string str_sign_tx = TRONAPI::make_sign_tx(str_unsign_tx, str_sign);
+	std::cout << "str_sign_tx:\n" << str_sign_tx << std::endl;
 }
 
 
