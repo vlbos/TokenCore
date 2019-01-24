@@ -38,6 +38,8 @@ private:
     u8  max_cpu_usage_ms;
     u32 delay_seconds;
 
+    bool is_fromJson;
+    
 private:
     const static int EXPIRATION_SEC = 3000;
 };

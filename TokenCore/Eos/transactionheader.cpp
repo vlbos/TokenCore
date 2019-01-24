@@ -14,6 +14,7 @@ TransactionHeader::TransactionHeader()
     max_net_usage_words = 0UL;
     max_cpu_usage_ms = 0;
     delay_seconds = 0UL;
+    is_fromJson = false;
 }
 
 void TransactionHeader::serialize(EOSByteWriter *writer) const
@@ -47,8 +48,12 @@ void TransactionHeader::serialize(EOSByteWriter *writer) const
 //       printf("serial date time: %ld\n", (long)t_);
 
 //       time_t t_ = expiration + EXPIRATION_SEC;
-       unsigned long t_ = expiration + EXPIRATION_SEC + 8*60*60;
-       //printf("serial date time: %ld\n", t_);
+       unsigned long t_ = 0;
+       if(is_fromJson)
+           t_ = expiration + 8*60*60;
+       else
+           t_ = expiration + EXPIRATION_SEC + 8*60*60;
+       printf("serial date time: %ld\n", t_);
 
        writer->putIntLE((int)t_);
 
@@ -134,6 +139,7 @@ void TransactionHeader::fromJson(const Json::Value& value)
 //         return;
 //     }
 
+    is_fromJson = true;
     std::string _expiration = value["expiration"].asString();
     setExpiration(_expiration);
     //expiration = obj.value("expiration").toString().toStdString();
