@@ -86,6 +86,23 @@ Java_com_btxon_tokencore_TxBtc__1firmware_1prepare_1data(JNIEnv *env, jclass typ
 }
 
 extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_btxon_tokencore_TxBtc__1firmware_1prepare_1data_1usdt(JNIEnv *env, jclass type,
+                                                               jlong handler,
+                                                               jint index) {
+    auto *ut = (UserTransaction *) handler;
+    if (ut == nullptr) {
+        return 0;
+    }
+    USDTAPI::make_unsign_tx(ut);
+    std::string result = Binary::encode(USDTAPI::firmware_prepare_data(false, ut, (int) index));
+    if (!result.empty()) {
+        return env->NewStringUTF(result.c_str());
+    }
+    return 0;
+}
+
+extern "C"
 JNIEXPORT void JNICALL
 Java_com_btxon_tokencore_TxBtc__1firmware_1process_1result(JNIEnv *env, jclass type,
                                                            jlong handler,
@@ -185,5 +202,23 @@ Java_com_btxon_tokencore_TxBtc__1get_1address(JNIEnv *env, jclass type, jboolean
     string address = get_address(j_is_test_net, public_key);
     env->ReleaseStringUTFChars(j_public_key, public_key);
     return env->NewStringUTF(address.c_str());
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_btxon_tokencore_TxBtc__1get_1tx_1len(JNIEnv *env, jclass type, jlong handler) {
+    UserTransaction *ut = (UserTransaction *) handler;
+    if (ut == nullptr)return -1;
+    int ret = BTCAPI::get_tx_len(ut);
+    return ret;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_btxon_tokencore_TxBtc__1get_1usdt_1len(JNIEnv *env, jclass type, jlong handler) {
+    UserTransaction *ut = (UserTransaction *) handler;
+    if (ut == nullptr)return -1;
+    int ret = USDTAPI::get_tx_len(ut);
+    return ret;
 }
 

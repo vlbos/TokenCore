@@ -86,7 +86,7 @@ public class TxEOS extends Tx {
         return 0;
     }
 
-    public int init(final String chainId, final String rawJson) {
+    public int init(final String chainId, final JSONObject rawJson) {
         /*
         {
             "chain_id": "....",

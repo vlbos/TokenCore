@@ -15,6 +15,7 @@ public class TxBtc extends Tx {
 
     private long _tx;
     private int signCount;
+    private boolean isUsdt;
 
     public TxBtc() {
     }
@@ -51,6 +52,7 @@ public class TxBtc extends Tx {
     private void initSignCountWithJSONStr(String json_param) {
         try {
             JSONObject jsonObject = new JSONObject(json_param);
+            isUsdt = "USDT".equals(jsonObject.getString("coin_id"));//FIXME
             JSONArray utxoList = jsonObject.getJSONArray("utxo_list");
             signCount = utxoList.length();
         } catch (JSONException e) {
@@ -63,7 +65,11 @@ public class TxBtc extends Tx {
     public String firmwarePrepareData(int index) {
         if (_tx == 0) return null;
         firmwarePrepareDataIndex = index;
-        return _firmware_prepare_data(_tx, index);
+        if (isUsdt) {
+            return _firmware_prepare_data_usdt(_tx, index);
+        } else {
+            return _firmware_prepare_data(_tx, index);
+        }
     }
 
     @Override
@@ -91,7 +97,11 @@ public class TxBtc extends Tx {
             // 使用硬件签名
             return -1;
         } else {
-            return _sign(_tx, privateKey);
+            if (isUsdt) {
+                return _sign_usdt(_tx, privateKey);
+            } else {
+                return _sign(_tx, privateKey);
+            }
         }
     }
 
@@ -128,6 +138,14 @@ public class TxBtc extends Tx {
         return _get_address(!mainNet, publicKey);
     }
 
+    public int getBtcLen(){
+        return _get_tx_len(_tx);
+    }
+
+    public int getUsdtLen(){
+        return _get_usdt_len(_tx);
+    }
+
     @Override
     public void close() throws Exception {
         if (_tx != 0) {
@@ -142,19 +160,25 @@ public class TxBtc extends Tx {
 
     private native String _firmware_prepare_data(final long handler, final int index);
 
+    private native String _firmware_prepare_data_usdt(final long handler, final int index);
+
     private native void _firmware_process_result(final long handler, int index, final String signResult);
 
     private native String _make_signed_tx(final long handler);
 
     private native int _sign(final long handler, final String privateKey);
 
-    private native String _get_sign_result(final long handler);
-
     private native int _sign_usdt(final long handler, final String privateKey);
 
     private native String _get_private_key(final String seed);
 
+    private native String _get_sign_result(final long handler);
+
     private native String _get_public_key(final boolean compress, final String privateKey);
 
     private native String _get_address(final boolean isTestNet, final String publicKey);
+
+    private native int _get_tx_len(final long handler);
+
+    private native int _get_usdt_len(final long handler);
 }
