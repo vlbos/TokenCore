@@ -7,12 +7,11 @@
 #include <stdint.h>
 #include <string.h>
 
-using namespace std;
-
 #include "u256.h"
 
-//#include <boost/multiprecision/cpp_int.hpp>
-//using u256 = boost::multiprecision::uint256_t;
+using std::string;
+using std::vector;
+
 
 class Binary : public vector<unsigned char>
 {
