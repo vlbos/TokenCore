@@ -512,6 +512,15 @@
     <ClCompile Include="crypto\sha2.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
+    <ClCompile Include="crypto\base64.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="Btc\prikey-to-wif.cpp">
+      <Filter>Btc</Filter>
+    </ClCompile>
+    <ClCompile Include="Btc\mnemonic-new.cpp">
+      <Filter>Btc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="uEcc\types.h">
@@ -934,6 +943,15 @@
     <ClInclude Include="crypto\sha2.h">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="crypto\base64.h">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Btc\prikey-to-wif.h">
+      <Filter>Btc</Filter>
+    </ClInclude>
+    <ClInclude Include="Btc\mnemonic-new.h">
+      <Filter>Btc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="uEcc\curve-specific.inc">
@@ -945,8 +963,5 @@
     <None Include="jsoncpp\src\lib_json\json_valueiterator.inl">
       <Filter>jsoncpp</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="some.txt" />
   </ItemGroup>
 </Project>

@@ -22,6 +22,8 @@
     <ClCompile Include="BhpApi.cpp" />
     <ClCompile Include="Bhp\bhp_transaction.cpp" />
     <ClCompile Include="BtcApi.cpp" />
+    <ClCompile Include="Btc\mnemonic-new.cpp" />
+    <ClCompile Include="Btc\prikey-to-wif.cpp" />
     <ClCompile Include="Btc\script.cpp" />
     <ClCompile Include="BumoApi.cpp" />
     <ClCompile Include="Bumo\BumoRequest.cpp" />
@@ -39,6 +41,7 @@
     <ClCompile Include="Bumo\ed25519\verify.c" />
     <ClCompile Include="Bumo\mongoose.c" />
     <ClCompile Include="crypto\base58.cpp" />
+    <ClCompile Include="crypto\base64.cpp" />
     <ClCompile Include="crypto\bip.cpp" />
     <ClCompile Include="crypto\bx_plat.cpp" />
     <ClCompile Include="crypto\bx_str.cpp" />
@@ -172,6 +175,8 @@
     <ClInclude Include="BhpApi.h" />
     <ClInclude Include="Bhp\bhp_transaction.h" />
     <ClInclude Include="BtcApi.h" />
+    <ClInclude Include="Btc\mnemonic-new.h" />
+    <ClInclude Include="Btc\prikey-to-wif.h" />
     <ClInclude Include="Btc\script.h" />
     <ClInclude Include="BumoApi.h" />
     <ClInclude Include="Bumo\BumoRequest.h" />
@@ -186,6 +191,7 @@
     <ClInclude Include="Bumo\ed25519\sc.h" />
     <ClInclude Include="Bumo\mongoose.h" />
     <ClInclude Include="crypto\base58.h" />
+    <ClInclude Include="crypto\base64.h" />
     <ClInclude Include="crypto\bip.h" />
     <ClInclude Include="crypto\bx_plat.h" />
     <ClInclude Include="crypto\bx_str.h" />
@@ -314,9 +320,6 @@
     <None Include="jsoncpp\src\lib_json\json_valueiterator.inl" />
     <None Include="uEcc\curve-specific.inc" />
     <None Include="uEcc\platform-specific.inc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="some.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
