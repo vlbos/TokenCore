@@ -315,9 +315,6 @@
     <None Include="uEcc\curve-specific.inc" />
     <None Include="uEcc\platform-specific.inc" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="some.txt" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{826FF900-1556-48B4-BE92-615062A50ADA}</ProjectGuid>

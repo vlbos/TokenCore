@@ -946,7 +946,4 @@
       <Filter>jsoncpp</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="some.txt" />
-  </ItemGroup>
 </Project>
