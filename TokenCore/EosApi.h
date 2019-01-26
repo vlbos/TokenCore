@@ -39,7 +39,7 @@ typedef void *EOS_TX;
 namespace EOSAPI {
 
 bool validate_account(string account);
-string get_public_key(const string &private_key);        // ´ÓË½Ô¿»ñÈ¡¹«Ô¿
+string get_public_key(const string &private_key);        // ï¿½ï¿½Ë½Ô¿ï¿½ï¿½È¡ï¿½ï¿½Ô¿
 string get_private_key(const string& seed);
 
 int make_unsign_tx(
@@ -133,7 +133,7 @@ int TxGetTransacton(
 );
 
 /*
-¸ù¾ÝÖÖ×Ó¼ÆËãHDË½Ô¿
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¼ï¿½ï¿½ï¿½HDË½Ô¿
 {
   "seed": "3423423421231424"
 }
@@ -151,6 +151,12 @@ int TxGetPubKey(
 int TxLongToName(
         _in long val,
         _out char **result
+);
+
+string sign_eos_message(
+        _in string str_msg_json,
+        _in string str_prikey
+//        _out char **result
 );
 
 } // end of namespace.
