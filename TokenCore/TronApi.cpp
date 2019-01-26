@@ -10,6 +10,7 @@
 #include "crypto/base58.h"
 #include "crypto/utility_tools.h"
 #include "crypto/keccak256.h"
+#include "crypto/ripemd160.h"
 #include "crypto/hash.h"
 
 #include "Tron/CJsonObject.hpp"
@@ -778,6 +779,7 @@ string sign_message(const bool use_trx_header, const string &str_transaction , c
     return str_sign;
 }
 
+
 string make_sign_tx(const string &str_unsign_tx, const string &str_sign_data)
 {
     if (str_unsign_tx == "" || str_sign_data.size() != 130)
@@ -1159,6 +1161,19 @@ int TxSign(_in TRX_TX *tx, _in const char *json_param)
         return -1;
 
     _tx->signature = ret;
+    return 0;
+}
+
+int TxSetSignature(_in TRX_TX *tx, _in string signature)
+{
+    if (tx == nullptr)
+        return -1;
+    TRX_TX_INTERNAL *_tx = (TRX_TX_INTERNAL *)tx;
+
+    if (signature.empty())
+        return -2;
+
+    _tx->signature = signature;
     return 0;
 }
 
