@@ -365,6 +365,89 @@ void test_usdt_sign()
 	printf("%s\n", value.str().c_str());
 }
 
+// sp
+static void sp_test_sign()
+{
+	string seed = mnemonic_to_seed("manual shoot jelly view scrub head also price cliff upset honey farm daring among route cheese evidence caution joy lock asset occur catalog high", "");
+	//string seed = mnemonic_to_seed("blue submit hurt base spray learn permit two absurd brown large extend awkward cool hair resist quarter fever brave sight palm argue adapt slush", "");
+	string private_key = BTCAPI::get_private_key(false, seed);
+	string public_key = BTCAPI::get_public_key(private_key);
+	string address = BTCAPI::get_address(false, public_key);	// 1K2VpuurN1seRUvCUHj6DLGiFWASJifZ7y
+
+	UserTransaction ut;
+	ut.from_address = address;
+	ut.to_address = "19uvdbPW1A2hDaNysFRB6xJDCEG5opAJg6";
+	ut.change_address = address;
+	//ut.pay = 15591;
+	ut.pay = 10000;
+
+	CoinType coinType = gCoin["BTC"].type;
+	BtxonAPI api;
+	int ret;
+
+	// 取余额
+	u256 balance, froze;
+	ret = api.fetchBalanceV2(coinType, ut.from_address, true, balance, froze);
+	if (ret)
+	{
+		printf("取余额失败\n");
+		return;
+	}
+	if (balance < ut.pay)
+	{
+		printf("余额不足\n");
+		return;
+	}
+
+	// 取 UTXO
+	ret = api.getUTXO(coinType, ut.from_address, ut.utxo_list);
+	if (ret)
+	{
+		printf("取UTXO失败\n");
+		return;
+	}
+
+	/*
+	printf("points\n{\n");
+	for (int i = 0; i < ut.utxo_list.size(); i++)
+	{
+		printf("\tpoint\n");
+		printf("\t{\n");
+		printf("\t\thash %s\n", ut.utxo_list[i].hash.c_str());
+		printf("\t\tindex %u\n", ut.utxo_list[i].index);
+		printf("\t\tvalue %I64u\n", ut.utxo_list[i].value);
+		printf("\t\tscript %s\n", ut.utxo_list[i].script.c_str());
+		printf("\t}\n");
+	}
+	printf("}\n");
+	*/
+
+	// 取交易费
+	FeeInfo info;
+	ret = api.fetchFee(coinType, info);
+	if (ret)
+	{
+		printf("取交易费失败\n");
+		return;
+	}
+
+	ut.fee_count = BTCAPI::get_tx_len(&ut);
+	ut.fee_price = (u256)info.midFee;
+	ut.from_wallet_index = 0;
+	ut.change_wallet_index = 0;
+
+	//ut.pay = balance - (ut.fee_count*ut.fee_price);
+
+	// 软件签名 ==========================================
+	ret = BTCAPI::make_unsign_tx(&ut);
+	if (ret != 0)
+		return;
+	BTCAPI::sign_tx(coinType.is_testnet(), &ut, private_key);
+	BTCAPI::make_sign_tx(coinType.is_testnet(), &ut);
+
+	printf("%s\n", ut.tx_str.c_str());
+}
+
 void BTCTest()
 {
 	//test_validate_address();
@@ -384,5 +467,7 @@ void BTCTest()
 	//BTCAPI::dump_tx(true, "0100000001eab24fa00eba0a2a9fd7247485c7880de28b6b59d577b29022af4a011c728f6b010000006a47304402204ae1e0bce8bf142d454ec611f7b1db3d5c18b6ef7ec4886c116b12ef3842349402202d203f5c5b79b86200b639f98a86c55b17c1e1d712bbc59ddf0d8989b30cb68c01210259ac45c55394f2b30daa6db957984f643739a31bf739f736e524cbd35aec4c26ffffffff02002d3101000000001976a9142f57034b6ee54315a481f13e232a1033d42ca7ed88ac00dd8e00000000001976a91406ef16276bdae552ffb5a175a02351e336a1926288ac00000000");
 
 	//GetWalletBalance();
-	test_usdt_sign();
+	//test_usdt_sign();
+
+	sp_test_sign();
 }
