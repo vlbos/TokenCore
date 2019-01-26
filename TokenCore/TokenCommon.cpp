@@ -1,3 +1,4 @@
+
 #include "TokenCommon.h"
 #include <algorithm>
 #include <random>
@@ -21,9 +22,9 @@ string gen_seed(size_t bit_length)
 		return(string(""));
 
 	Binary vec_seed;
-	random_device rd;
-	mt19937 mt(rd());
-	uniform_int_distribution<> dis(1, 255);
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_int_distribution<> dis(1, 255);
 	for (size_t i = 0; i < bit_length / 8; i++)
 		vec_seed.push_back((unsigned char)(dis(mt)));
 

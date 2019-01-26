@@ -6,13 +6,11 @@
 #include <algorithm>
 #include <stdint.h>
 #include <string.h>
-
-using namespace std;
-
 #include "u256.h"
 
-//#include <boost/multiprecision/cpp_int.hpp>
-//using u256 = boost::multiprecision::uint256_t;
+using std::string;
+using std::vector;
+
 
 class Binary : public vector<unsigned char>
 {
@@ -83,7 +81,7 @@ public:
 		return *this;
 	}
 
-	// µÈÍ¬ÓÚ encode_base16
+	// ç­‰åŒäº encode_base16
 	static string encode(const Binary& bin)
 	{
 		string str;
@@ -108,7 +106,7 @@ public:
 		return str;
 	}
 
-	// µÈÍ¬ÓÚ decode_base16
+	// ç­‰åŒäº decode_base16
 	static Binary decode(const string& str)
 	{
 		Binary bin;
@@ -185,27 +183,27 @@ struct Utxo
 
 struct UserTransaction
 {
-	// ÊäÈëÄÚÈİ
-	string from_address;		// ¸¶¿îµØÖ·
-	string to_address;			// ÊÕ¿îµØÖ·
-	string change_address;		// ÕÒÁãµØÖ·
-	u256 pay;					// ¸¶¿î½ğ¶î
-	u256 fee_count;				// ½»Ò×·ÑµÄ gas ¸öÊı
-	u256 fee_price;				// ½»Ò×·ÑµÄ gas µ¥¼Û£¬fee = fee_count * fee_price
-	u256 nonce;					// ½»Ò×ĞòºÅ(ETH)
-	string contract_address;	// ºÏÔ¼µØÖ·
+	// è¾“å…¥å†…å®¹
+	string from_address;		// ä»˜æ¬¾åœ°å€
+	string to_address;			// æ”¶æ¬¾åœ°å€
+	string change_address;		// æ‰¾é›¶åœ°å€
+	u256 pay;					// ä»˜æ¬¾é‡‘é¢
+	u256 fee_count;				// äº¤æ˜“è´¹çš„ gas ä¸ªæ•°
+	u256 fee_price;				// äº¤æ˜“è´¹çš„ gas å•ä»·ï¼Œfee = fee_count * fee_price
+	u256 nonce;					// äº¤æ˜“åºå·(ETH)
+	string contract_address;	// åˆçº¦åœ°å€
 
-	int from_wallet_index;		// ¸¶¿îµÄ×ÓË½Ô¿µÄË÷Òı
-	int change_wallet_index;	// ÕÒÁãµØÖ·µÄ×Ó¹«Ô¿µÄË÷Òı
+	int from_wallet_index;		// ä»˜æ¬¾çš„å­ç§é’¥çš„ç´¢å¼•
+	int change_wallet_index;	// æ‰¾é›¶åœ°å€çš„å­å…¬é’¥çš„ç´¢å¼•
 	vector<Utxo> utxo_list;
 
-	// ÄÚ²¿Ê¹ÓÃ
-	int  input_count;			// ÊäÈëµÄ¸öÊı
-	Binary public_key;			// ¸¶¿îµØÖ·µÄ¹«Ô¿
-	vector<Binary> sig_data;	// Ç©ÃûÊı¾İÁĞ±í
+	// å†…éƒ¨ä½¿ç”¨
+	int  input_count;			// è¾“å…¥çš„ä¸ªæ•°
+	Binary public_key;			// ä»˜æ¬¾åœ°å€çš„å…¬é’¥
+	vector<Binary> sig_data;	// ç­¾åæ•°æ®åˆ—è¡¨
 
-	// Êä³öÄÚÈİ
-	string tx_str;				// Éú³ÉµÄ tx ´®
+	// è¾“å‡ºå†…å®¹
+	string tx_str;				// ç”Ÿæˆçš„ tx ä¸²
 
 	void clear(int mode = 0)
 	{
@@ -232,22 +230,22 @@ struct UserTransaction
 	}
 };
 
-// ²âÊÔ×¨ÓÃ
+// æµ‹è¯•ä¸“ç”¨
 void VF(const char* hint, bool check);
 
-// Éú³ÉÖ¸¶¨³¤¶ÈµÄÎ±Ëæ»úÊı´®
+// ç”ŸæˆæŒ‡å®šé•¿åº¦çš„ä¼ªéšæœºæ•°ä¸²
 string gen_seed(size_t bit_length);
 
-// ¸ù¾İÂ·¾¶¸úÖÖ×Ó»ñÈ¡BIP44±ê×¼µÄ·Ö²ãË½Ô¿
+// æ ¹æ®è·¯å¾„è·Ÿç§å­è·å–BIP44æ ‡å‡†çš„åˆ†å±‚ç§é’¥
 string bip44_get_private_key(const string bip39_seed, const string bip32_path);
 
-// ¸ù¾İìØÖµ»ñÈ¡Öú¼Ç´Ê
+// æ ¹æ®ç†µå€¼è·å–åŠ©è®°è¯
 string entropy_to_mnemonic(const string entropy);
 
-// Í¨¹ıÖú¼Ç´ÊÉú³ÉÖÖ×Ó(passphraseÎªBIP38¼ÓÃÜ¶ÌÓï)
+// é€šè¿‡åŠ©è®°è¯ç”Ÿæˆç§å­(passphraseä¸ºBIP38åŠ å¯†çŸ­è¯­)
 string mnemonic_to_seed(const string mnemonic, const string passphrase);
 
-// ¼ìÑéÖú¼Ç´ÊÊÇ·ñ·ûºÏ¹æÔò
+// æ£€éªŒåŠ©è®°è¯æ˜¯å¦ç¬¦åˆè§„åˆ™
 bool check_mnemonic(const string mnemonic);
 
 #endif // TOKENCOMMON_H_

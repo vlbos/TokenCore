@@ -19,6 +19,16 @@
 
 #include "Eos/eos_key_encode.h"
 
+
+#include <uEcc/macroECC.h>
+#include "Tron/Transaction.pb.h"
+#include "crypto/base58.h"
+#include "crypto/utility_tools.h"
+#include "crypto/keccak256.h"
+#include "crypto/ripemd160.h"
+#include "crypto/hash.h"
+#include "Tron/CJsonObject.hpp"
+
 struct EOS_TX_INTERNAL {
     string chain_id;
     SignedTransaction stx;
@@ -104,7 +114,7 @@ int make_unsign_tx(
 //     Json::Value jobj = stx.toJson();
 //     printf("signed:\n");
 //     printf(jsw.write(jobj).c_str());
-// 
+//
 //     Json::Value jsend;
 //     jsend["compression"] = "none";
 //     jsend["transaction"] = jobj;
@@ -482,5 +492,78 @@ int TxLongToName(
     memcpy(*result, ret.c_str(), len);
     return 0;
 }
+
+
+/*
+ * {
+    "publicKey": "EOS8iAdjPL94BnNstBf9unGiVUfHnQbzHkXeXbApZoVMoUYgBpGnV",
+    "data": "eosio.token | EOS | 1 | yumenglei123 | whaleexchang | 115098689128 680835 | eosio.token | EOS | 0",
+    "whatfor": "Withdraw EOS",
+    "isHash": false
+    }
+ *
+ * */
+    string sign_eos_message(
+            _in string str_msg_json,
+            _in string str_prikey
+
+    ){
+        Json::Reader jReader;
+        Json::Value jRoot;
+
+        if (!jReader.parse(str_msg_json.c_str(), jRoot))
+            return "";
+        if (!jRoot.isObject())
+            return "";
+
+        Json::Value jPubkey = jRoot["publicKey"];
+        Json::Value jData = jRoot["data"];
+        Json::Value jIsHash = jRoot["isHash"];
+
+        if(jPubkey.isNull() || !jPubkey.isString() || jData.isNull() || !jData.isString() || jIsHash.isNull() || !jIsHash.isBool())
+            return "";
+
+        string pubkey = jPubkey.asString();
+        string data = jData.asString();
+        bool is_data_hashed = jIsHash.asBool();
+
+        Binary binToBeSign;
+        binToBeSign.resize(data.length());
+        memcpy(&binToBeSign[0], data.c_str(), data.length());
+
+        Binary binHash = sha256_hash(binToBeSign);
+
+        uint8_t signature[mECC_BYTES * 2] = { 0 };
+
+        //Binary sz_prikey = Binary::decode(str_prikey);
+        Binary pri;
+        if (!bx_eos_wif2bin(str_prikey, pri))
+            return "";
+
+        int recId = mECC_sign_forbc(pri.data(), &binHash[0], signature);
+
+        if (recId == -1) {
+            return "";
+        } else {
+            unsigned char bin[65+4] = { 0 };
+            int binlen = 65+4;
+            int headerBytes = recId + 27 + 4;
+            bin[0] = (unsigned char)headerBytes;
+            memcpy(bin + 1, signature, mECC_BYTES * 2);
+
+            unsigned char temp[67] = { 0 };
+            memcpy(temp, bin, 65);
+            memcpy(temp + 65, "K1", 2);
+
+            Binary rmdhash = ripemd160(Binary(temp, 67));
+            memcpy(bin + 1 +  mECC_BYTES * 2, rmdhash.data(), 4);
+
+            string sigbin = encode_base58(Binary(bin, binlen));
+            string sig = "SIG_K1_";
+            sig += sigbin;
+
+            return sig;
+        }
+    }
 
 }

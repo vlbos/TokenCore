@@ -6,6 +6,7 @@
 
 #include "BtcApi.h"
 #include "uEcc/uECC.h"
+#include <uEcc/macroECC.h>
 
 #include "crypto/base58.h"
 #include "crypto/utility_tools.h"
@@ -270,8 +271,7 @@ string signature(const string& str_prikey, string& str_hash)
 	const struct uECC_Curve_t * curve = uECC_secp256k1();
 
 	Binary sign(64);
-	if (!uECC_sign(prikey.data(), hash.data(), (unsigned int)hash.size(), sign.data(), curve))
-		return string("");
+	int v = mECC_sign_forbc(prikey.data(), hash.data(), sign.data());
 
 	return Binary::encode(sign);
 }

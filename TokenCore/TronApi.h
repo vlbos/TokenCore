@@ -63,6 +63,7 @@ namespace TRX_API {
             _in TRX_TX *tx,
             _in const char *json_param
     );
+	int TxSetSignature(_in TRX_TX *tx, _in string signature);
 
     // use TxFree() to release resource of `result`.
     int TxGetTransacton(
