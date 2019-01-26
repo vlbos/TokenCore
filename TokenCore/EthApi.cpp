@@ -111,11 +111,15 @@ int make_unsign_tx(EthereumSignTx& tx, unsigned char coinType, const char* /*fro
 	char buffer[1024];
 
 	// nonce
-    sprintf_s(buffer, 1024, "%" PRIxLEAST64, nonce);
-	string nonceStr = buffer;
-	tx.nonce.size = size_of_bytes((int)nonceStr.size());
-	hex2byte_arr(nonceStr.c_str(), (int)nonceStr.size(), tx.nonce.bytes, tx.nonce.size);
-
+    if (nonce == 0) {
+        tx.nonce.size = 0;
+    }else{
+        sprintf_s(buffer, 1024, "%" PRIxLEAST64, nonce);
+        string nonceStr = buffer;
+        tx.nonce.size = size_of_bytes((int)nonceStr.size());
+        hex2byte_arr(nonceStr.c_str(), (int)nonceStr.size(), tx.nonce.bytes, tx.nonce.size);
+    }
+    
 	// gas-price
     sprintf_s(buffer, 1024, "%" PRIxLEAST64, gasPrice);
 	string gasPriceStr = buffer;
