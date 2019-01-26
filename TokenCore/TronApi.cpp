@@ -157,14 +157,16 @@ string get_address(const string &str_pubkey_nocompress, bool is_mainnet /* = tru
     keccak_256(sz_pubkey_nocompress.data(), sz_pubkey_nocompress.size(), sz_keccak256.data());
     string str_keccak256 = Binary::encode(sz_keccak256);
     string str_pubkey_hash = str_keccak256.substr(str_keccak256.size() - 40);
-    if (is_mainnet)
-        str_pubkey_hash = "41" + str_pubkey_hash;
-    else
-        str_pubkey_hash = "a0" + str_pubkey_hash;
+	if (is_mainnet) {
+		str_pubkey_hash = "41" + str_pubkey_hash;
+	}
+	else {
+		str_pubkey_hash = "a0" + str_pubkey_hash;
+	}
 
     Binary sz_pubkey_hash = Binary::decode(str_pubkey_hash);
     Binary sz_checksum = bitcoin256(sz_pubkey_hash).left(4);
-    sz_pubkey_hash += sz_checksum;
+    sz_pubkey_hash += sz_checksum;	
     str_address = encode_base58(sz_pubkey_hash);
     return str_address;
 }
