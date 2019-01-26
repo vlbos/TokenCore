@@ -264,3 +264,16 @@ Java_com_btxon_tokencore_TxEOS__1make_1signed_1tx(JNIEnv *env, jclass type, jlon
     env->ReleaseStringUTFChars(j_sign_result, const_char_sign_result);
     return ret;
 }
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_btxon_tokencore_TxEOS__1sign_1message(JNIEnv *env, jclass type, jstring raw_json, jstring j_str_prikey) {
+    const char *const_raw_json = env->GetStringUTFChars(raw_json, 0);
+    const char *const_char_prikey = env->GetStringUTFChars(j_str_prikey, 0);
+    std::string raw_json_str = const_raw_json;
+    std::string pro_key_str = const_char_prikey;
+    std::string sign_result = EOSAPI::sign_eos_message(raw_json_str, pro_key_str);
+    env->ReleaseStringUTFChars(raw_json, const_raw_json);
+    env->ReleaseStringUTFChars(j_str_prikey, const_char_prikey);
+    return env->NewStringUTF(sign_result.c_str());
+}

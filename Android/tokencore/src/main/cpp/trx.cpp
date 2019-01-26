@@ -141,12 +141,21 @@ Java_com_btxon_tokencore_TxTRX__1make_1unsigned_1tx(JNIEnv *env, jclass type, jl
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_btxon_tokencore_TxTRX__1make_1signed_1tx(JNIEnv *env, jclass type, jlong handler, jstring j_sign_result) {
+Java_com_btxon_tokencore_TxTRX__1make_1signed_1tx(JNIEnv *env, jclass type, jlong handler,
+                                                  jstring j_sign_result) {
     const char *const_char_sign_result = env->GetStringUTFChars(j_sign_result, 0);
     jstring jret = nullptr;
     TRX_TX *tx = (TRX_TX *) handler;
-    std::string sign_result = const_char_sign_result;
-    jret = env->NewStringUTF(MakeSignedTx(tx,sign_result).c_str());
+    int ret = TxSetSignature(tx, const_char_sign_result);
+    if (ret == 0) {
+        char *result = nullptr;
+        char *param = nullptr;//unused
+        ret = TxGetTransacton(tx, param, &result);
+        if (ret == 0) {
+            jret = env->NewStringUTF(result);
+            tx::free(result);
+        }
+    }
     env->ReleaseStringUTFChars(j_sign_result, const_char_sign_result);
     return jret;
 }

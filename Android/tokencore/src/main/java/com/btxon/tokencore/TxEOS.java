@@ -43,7 +43,7 @@ public class TxEOS extends Tx {
         return _make_signed_tx(_tx, signResult);
     }
 
-    static public String getPrivateKey(final String seed) {
+    public static String getPrivateKey(final String seed) {
         JSONObject jparam = new JSONObject();
         try {
             jparam.put("seed", seed);
@@ -54,7 +54,7 @@ public class TxEOS extends Tx {
         return _getPrivateKey(jparam.toString());
     }
 
-    static public String getPublicKey(final String wifPriKey) {
+    public static String getPublicKey(final String wifPriKey) {
         return _getPublicKey(wifPriKey);
     }
 
@@ -220,6 +220,8 @@ public class TxEOS extends Tx {
     private native static int _addAction(final long handler, final String json_param);
 
     private native static int _sign(final long handler, final String wifKey);
+
+    public static native String _sign_message(final String raw_json, final String priKey);
 
     private native static String _getResult(final long handler, final String json_param);
 
